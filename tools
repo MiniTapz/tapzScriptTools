@@ -1,46 +1,33 @@
--- LocalScript
+-- LocalScript (ONLY SimpleSpy + Dark Dex, no remotes)
 
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 
--- ================= UI =================
+-- ===== UI =====
 local gui = Instance.new("ScreenGui")
-gui.Name = "ActionUI"
+gui.Name = "DexSpyUI"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromScale(0.35, 0.6)
-frame.Position = UDim2.fromScale(0.325, 0.2)
+frame.Size = UDim2.fromScale(0.25, 0.18)
+frame.Position = UDim2.fromScale(0.375, 0.4)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 frame.Parent = gui
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,16)
 
 local layout = Instance.new("UIListLayout", frame)
-layout.Padding = UDim.new(0,8)
+layout.Padding = UDim.new(0,10)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Center
 
 local padding = Instance.new("UIPadding", frame)
 padding.PaddingTop = UDim.new(0,12)
 padding.PaddingBottom = UDim.new(0,12)
 
--- ================= Helpers =================
-local function makeButton(text, callback)
-	local b = Instance.new("TextButton")
-	b.Size = UDim2.fromScale(0.9, 0.08)
-	b.Text = text
-	b.TextScaled = true
-	b.BackgroundColor3 = Color3.fromRGB(45,45,45)
-	b.TextColor3 = Color3.new(1,1,1)
-	b.Parent = frame
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,12)
-	b.MouseButton1Click:Connect(callback)
-	return b
-end
-
+-- ===== Draggable helper =====
 local function makeDraggable(guiObject)
 	local dragging = false
 	local dragStart, startPos
@@ -72,27 +59,32 @@ local function makeDraggable(guiObject)
 	end)
 end
 
--- ================= Loop =================
-local looping = false
-task.spawn(function()
-	while true do
-		if looping then
-			remote:FireServer("SummonAnomaly")
-		end
-		task.wait(1)
-	end
-end)
+-- ===== Button helper =====
+local function makeButton(text, callback)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.fromScale(0.9, 0.4)
+	b.Text = text
+	b.TextScaled = true
+	b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+	b.TextColor3 = Color3.new(1,1,1)
+	b.Parent = frame
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,12)
+	b.MouseButton1Click:Connect(callback)
+	return b
+end
 
--- ================= Buttons =================
+-- ===== Buttons =====
 local simpleSpyBtn = makeButton("SimpleSpy", function()
-	loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpyBeta.lua"))()
+	loadstring(game:HttpGetAsync(
+		"https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpyBeta.lua"
+	))()
 end)
 
 local darkDexBtn = makeButton("Dark Dex", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"))()
+	loadstring(game:HttpGet(
+		"https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"
+	))()
 end)
 
-
--- ONLY these two are draggable
-makeDraggable(simpleSpyBtn)
-makeDraggable(darkDexBtn)
+-- Frame is draggable
+makeDraggable(frame)
